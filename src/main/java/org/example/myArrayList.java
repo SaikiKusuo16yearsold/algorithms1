@@ -29,35 +29,32 @@ public class myArrayList implements StringList {
 
     @Override
     public String add(int index, String item) {
-        String answer = "";
-        int currentIndex = size;
+        int currentIndex = 0;
         for (int i = 0; i < size; i++) {
-            if (elements[i] == null) {
-                currentIndex = i;
-                break;
+            if (elements[i] != null) {
+                currentIndex += 1;
             }
         }
         if (index < 0 || index >= size || index > currentIndex) {
             throw new IndexOutOfBoundsException();
         }
-        for (int i = index; i < size; i++) {
-            if (i == size) {
-                answer = elements[i];
-            }
+        if (currentIndex == size-1) {
             elements = Arrays.copyOf(elements, elements.length + 1);
-            elements[i + 1] = elements[i];
+        }
+        for (int i = size-1; i > index; i--) {
+            elements[i] = elements[i-1];
+//            elements[i + 1] = elements[i];
         }
         elements[index] = item;
-        return answer;
+        return item;
     }
 
     @Override
     public String set(int index, String item) throws IllegalAccessException {
-        int currentIndex = size;
+        int currentIndex = 0;
         for (int i = 0; i < size; i++) {
-            if (elements[i] == null) {
-                currentIndex = i;
-                break;
+            if (elements[i] != null) {
+                currentIndex += 1;
             }
         }
         if (index >= 0 && index < size && currentIndex != -1 && currentIndex > index) {
@@ -69,24 +66,31 @@ public class myArrayList implements StringList {
 
     @Override
     public String remove(String item) {
-        String answer = "";
-        if (elements[size - 1].equals(item)) {
-            answer = elements[size - 1];
+        int currentIndex = size;
+        for (int i = 0; i < size; i++) {
+            if (elements[i] == item) {
+                currentIndex = i;
+                break;
+            }
+        }
+        if (currentIndex == size - 1) {
+            String answer = elements[currentIndex];
             elements[size - 1] = null;
             return answer;
         }
-
+        String answer = "";
         for (int i = 0; i < size; i++) {
-            if (elements[i].equals(item)) {
+            if (i == currentIndex) {
                 answer = elements[i];
                 for (int j = i + 1; j < size; j++) {
                     elements[j - 1] = elements[j];
-//                    elements = Arrays.copyOf(elements, elements.length - 1);
                 }
+                elements[size - 1] = null;
                 return answer;
             }
         }
         throw new RuntimeException();
+
 
     }
 
@@ -104,6 +108,7 @@ public class myArrayList implements StringList {
                 for (int j = i + 1; j < size; j++) {
                     elements[j - 1] = elements[j];
                 }
+                elements[size - 1] = null;
                 return answer;
             }
         }
@@ -113,6 +118,9 @@ public class myArrayList implements StringList {
     @Override
     public boolean contains(String item) {
         for (int i = 0; i < size; i++) {
+            if (elements[i] == null) {
+                continue;
+            }
             if (elements[i].equals(item)) {
                 return true;
             }
@@ -123,7 +131,7 @@ public class myArrayList implements StringList {
     @Override
     public int indexOf(String item) {
         for (int i = 0; i < size; i++) {
-            if (elements[i].equals(item)) {
+            if (elements[i] != null && elements[i].equals(item)) {
                 return i;
             }
         }
@@ -132,8 +140,8 @@ public class myArrayList implements StringList {
 
     @Override
     public int lastIndexOf(String item) {
-        for (int i = size; i > 0; i--) {
-            if (elements[i].equals(item)) {
+        for (int i = size - 1; i > 0; i--) {
+            if (elements[i] != null && elements[i].equals(item)) {
                 return i;
             }
         }
@@ -142,11 +150,11 @@ public class myArrayList implements StringList {
 
     @Override
     public String get(int index) {
-        int currentIndex = size;
+        int currentIndex = 0;
         for (int i = 0; i < size; i++) {
-            if (elements[i] == null) {
-                currentIndex = i;
-                break;
+            if (elements[i] != null) {
+                currentIndex += 1;
+//                break;
             }
         }
         if (index >= 0 && index < size && index < currentIndex) {
@@ -180,8 +188,6 @@ public class myArrayList implements StringList {
         for (int i = 0; i < size; i++) {
             if (elements[i] != null) {
                 counter++;
-            } else {
-                return counter;
             }
         }
         return counter;
@@ -208,7 +214,8 @@ public class myArrayList implements StringList {
 
     @Override
     public String[] toArray() {
-        return elements;
+        return Arrays.copyOf(elements, size); // Возвращаем копию массива
     }
+
 }
 
